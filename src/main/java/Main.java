@@ -55,7 +55,7 @@ public class Main {
 
     private static void executeExternalCommand(String input) {
         String[] words = input.split(" ");
-        String command = words[0];
+        String command = words[1];
 
         String pathEnv = System.getenv("PATH");
         String[] paths = pathEnv.split(":");
