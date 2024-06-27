@@ -4,6 +4,8 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,52 +45,31 @@ public class Main {
                 } else {
                     System.out.println(input.substring(5) + ": not found");
                 }
-            } else if(input.endsWith("alice")) {
-                executeExternalCommand(input.toLowerCase());
             } else {
-                System.out.println(input + ": command not found");
+                String command = input.split(" ")[0];
+                String path = getPath(command);
+
+                if (path == null) {
+                    System.out.printf("%s: command not found%n", command);
+                } else {
+                    String fullPath = path + input.substring(command.length());
+                    Process p = Runtime.getRuntime().exec(fullPath.split(" "));
+                    p.getInputStream().transferTo(System.out);
+                }
             }
         }
 
 
     }
 
-    private static void executeExternalCommand(String input) {
-        String[] words = input.split(" ");
-        String command = words[1];
-
-        String pathEnv = System.getenv("PATH");
-        String[] paths = pathEnv.split(":");
-        boolean found = false;
-
-        for (String path : paths) {
-            File file = new File(path + "/" + command);
-            if (file.exists() && file.canExecute()) {
-               try {
-                   ProcessBuilder processBuilder = new ProcessBuilder(words);
-                   processBuilder.directory(new File(path));
-                   Process process = processBuilder.start();
-                   Scanner scanner = new Scanner(process.getInputStream());
-                   while (scanner.hasNextLine()) {
-                       System.out.println(scanner.nextLine());
-                   }
-                   int existCode = process.waitFor();
-                   if (existCode != 0) {
-                       Scanner errorScanner = new Scanner(process.getErrorStream());
-                       while (errorScanner.hasNextLine()) {
-                           System.out.println(errorScanner.nextLine());
-                       }
-                   }
-                   found = true;
-                   break;
-               } catch (IOException e) {
-                   System.out.println("Error executing command: " + e.getMessage());
-               } catch (InterruptedException e) {
-                   throw new RuntimeException(e);
-               }
-
-
+    private static String getPath(String input) {
+        for (String path : System.getenv("PATH").split(":")) {
+            Path file = Path.of(path, input);
+            if(Files.isReadable(file)) {
+                return file.toString();
             }
         }
+
+        return null;
     }
 }
