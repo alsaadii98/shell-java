@@ -25,7 +25,7 @@ public class Main {
             } else if (input.startsWith("echo ")) {
                 System.out.println(input.substring(5));
             } else if(input.startsWith("type ")) {
-                List<String> builtInCommands = Arrays.asList("echo", "type", "exit");
+                List<String> builtInCommands = Arrays.asList("echo", "type", "exit", "pwd");
                 if(builtInCommands.contains(input.substring(5))) {
                     System.out.println(input.substring(5) + " is a shell builtin");
                 } else if (System.getenv("PATH") != null) {
