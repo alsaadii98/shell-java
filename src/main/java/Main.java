@@ -59,7 +59,7 @@ public class Main {
                     // Absolute path
                     newDirectory = new File(path);
                 } else if (path.equals("~")) {
-                    newDirectory = new File(System.getProperty("user.home"));
+                    newDirectory = new File(System.getProperty(System.getenv("HOME")));
                 } else {
                     // Relative path
                     newDirectory = currentDirectory.toPath().resolve(path).normalize().toFile();
