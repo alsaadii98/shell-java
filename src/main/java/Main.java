@@ -2,6 +2,8 @@
 // import java.util.Scanner;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,32 +44,51 @@ public class Main {
                     System.out.println(input.substring(5) + ": not found");
                 }
             } else if(input.endsWith("alice")) {
-                String PATH = "/usr/bin:/usr/local/bin";
-                String pathEnv = PATH;
-                String[] paths = pathEnv.split(":");
-                String[] names = input.split(" ");
-                boolean found = false;
-                for (String path : paths) {
-
-                    File file = new File(path + "/" + names[0]);
-                    if (file.exists() && file.canExecute()) {
-
-                        Process process = Runtime.getRuntime().exec(path);
-                        process.getInputStream().transferTo(System.out);
-                        found = true;
-                        break;
-                    }
-                }
-
-                if(!found) {
-                    System.out.println(names[0] + ": not found");
-                }
-
+                executeExternalCommand(input);
             } else {
                 System.out.println(input + ": command not found");
             }
         }
 
 
+    }
+
+    private static void executeExternalCommand(String input) {
+        String[] words = input.split(" ");
+        String command = words[0];
+
+        String pathEnv = System.getenv("PATH");
+        String[] paths = pathEnv.split(":");
+        boolean found = false;
+
+        for (String path : paths) {
+            File file = new File(path + "/" + command);
+            if (file.exists() && file.canExecute()) {
+               try {
+                   ProcessBuilder processBuilder = new ProcessBuilder(words);
+                   processBuilder.directory(new File(path));
+                   Process process = processBuilder.start();
+                   Scanner scanner = new Scanner(process.getInputStream());
+                   while (scanner.hasNextLine()) {
+                       System.out.println(scanner.nextLine());
+                   }
+                   int existCode = process.waitFor();
+                   if (existCode != 0) {
+                       Scanner errorScanner = new Scanner(process.getErrorStream());
+                       while (errorScanner.hasNextLine()) {
+                           System.out.println(errorScanner.nextLine());
+                       }
+                   }
+                   found = true;
+                   break;
+               } catch (IOException e) {
+                   System.out.println("Error executing command: " + e.getMessage());
+               } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+               }
+
+
+            }
+        }
     }
 }
