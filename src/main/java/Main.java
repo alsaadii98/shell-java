@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +46,9 @@ public class Main {
                 } else {
                     System.out.println(input.substring(5) + ": not found");
                 }
+            } else if (input.equals("pwd")) {
+                String currentDir = Paths.get("").toAbsolutePath().toString();
+                System.out.println(currentDir);
             } else {
                 String command = input.split(" ")[0];
                 String path = getPath(command);
