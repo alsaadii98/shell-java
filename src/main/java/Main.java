@@ -44,7 +44,7 @@ public class Main {
                     System.out.println(input.substring(5) + ": not found");
                 }
             } else if(input.endsWith("alice")) {
-                executeExternalCommand(input);
+                executeExternalCommand(input.toLowerCase());
             } else {
                 System.out.println(input + ": command not found");
             }
