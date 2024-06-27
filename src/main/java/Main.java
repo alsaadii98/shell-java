@@ -25,7 +25,7 @@ public class Main {
             } else if (input.startsWith("echo ")) {
                 System.out.println(input.substring(5));
             } else if(input.startsWith("type ")) {
-                List<String> builtInCommands = Arrays.asList("echo", "type", "exit", "pwd");
+                List<String> builtInCommands = Arrays.asList("echo", "type", "exit", "pwd", "cd");
                 if(builtInCommands.contains(input.substring(5))) {
                     System.out.println(input.substring(5) + " is a shell builtin");
                 } else if (System.getenv("PATH") != null) {
@@ -49,6 +49,25 @@ public class Main {
             } else if (input.equals("pwd")) {
                 String currentDir = Paths.get("").toAbsolutePath().toString();
                 System.out.println(currentDir);
+            } else if (input.equals("cd")) {
+                String[] words = input.split(" ");
+                String path = words[1];
+                String currentDir = Paths.get("").toAbsolutePath().toString();
+                File newDirectory;
+                if (path.startsWith("/")) {
+                    // Absolute path
+                    newDirectory = new File(path);
+                } else {
+                    // Relative path
+                    newDirectory = new File(currentDir, path);
+                }
+
+                if (newDirectory.exists() && newDirectory.isDirectory()) {
+                    currentDir = String.valueOf(newDirectory);
+                } else {
+                    System.out.println("cd: " + path + ": No such file or directory");
+                }
+
             } else {
                 String command = input.split(" ")[0];
                 String path = getPath(command);
