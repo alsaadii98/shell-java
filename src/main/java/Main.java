@@ -63,6 +63,7 @@ public class Main {
                 } else {
                     // Relative path
                     newDirectory = currentDirectory.toPath().resolve(path).normalize().toFile();
+
                 }
 
                 if (newDirectory.exists() && newDirectory.isDirectory()) {
