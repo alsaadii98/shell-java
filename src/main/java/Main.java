@@ -62,7 +62,7 @@ public class Main {
                     newDirectory = new File(System.getProperty("user.dir"));
                 } else {
                     // Relative path
-                    newDirectory = new File(currentDirectory, path);
+                    newDirectory = currentDirectory.toPath().resolve(path).normalize().toFile();
                 }
 
                 if (newDirectory.exists() && newDirectory.isDirectory()) {
