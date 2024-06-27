@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static File currentDirectory = new File(System.getProperty("user.dir"));
+
     public static void main(String[] args) throws Exception {
         while (true) {
             System.out.print("$ ");
@@ -47,23 +49,24 @@ public class Main {
                     System.out.println(input.substring(5) + ": not found");
                 }
             } else if (input.equals("pwd")) {
-                String currentDir = Paths.get("").toAbsolutePath().toString();
-                System.out.println(currentDir);
-            } else if (input.equals("cd")) {
+                System.out.println(currentDirectory.getAbsolutePath());
+
+            } else if (input.startsWith("cd")) {
                 String[] words = input.split(" ");
                 String path = words[1];
-                String currentDir = Paths.get("").toAbsolutePath().toString();
                 File newDirectory;
                 if (path.startsWith("/")) {
                     // Absolute path
                     newDirectory = new File(path);
+                } else if (path.equals("~")) {
+                    newDirectory = new File(System.getProperty("user.dir"));
                 } else {
                     // Relative path
-                    newDirectory = new File(currentDir, path);
+                    newDirectory = new File(currentDirectory, path);
                 }
 
                 if (newDirectory.exists() && newDirectory.isDirectory()) {
-                    currentDir = String.valueOf(newDirectory);
+                    currentDirectory = newDirectory;
                 } else {
                     System.out.println("cd: " + path + ": No such file or directory");
                 }
