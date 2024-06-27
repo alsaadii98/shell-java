@@ -41,8 +41,9 @@ public class Main {
                 } else {
                     System.out.println(input.substring(5) + ": not found");
                 }
-            } else if(System.getenv("PATH") != null && input.endsWith("alice")) {
-                String pathEnv = System.getenv("PATH");
+            } else if(input.endsWith("alice")) {
+                String PATH = "/usr/bin:/usr/local/bin";
+                String pathEnv = PATH;
                 String[] paths = pathEnv.split(":");
                 String[] names = input.split(" ");
                 boolean found = false;
