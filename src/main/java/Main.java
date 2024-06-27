@@ -1,6 +1,10 @@
 // Uncomment this block to pass the first stage
 // import java.util.Scanner;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -16,15 +20,26 @@ public class Main {
             } else if (input.startsWith("echo ")) {
                 System.out.println(input.substring(5));
             } else if(input.startsWith("type ")) {
-                switch (input.substring(5)) {
-                    case "echo":
-                    case "exit":
-                    case "type":
-                        System.out.println(input.substring(5) + " is a shell builtin");
-                        break;
-                    default:
+                List<String> builtInCommands = Arrays.asList("echo", "type", "exit");
+                if(builtInCommands.contains(input.substring(5))) {
+                    System.out.println(input.substring(5) + " is a shell builtin");
+                } else if (System.getenv("PATH") != null) {
+                    String pathEnv = System.getenv("PATH");
+                    String[] paths = pathEnv.split(":");
+                    boolean found = false;
+                    for (String path : paths) {
+                        File file = new File(path + "/" + input.substring(5));
+                        if(file.exists() && file.canExecute()) {
+                            System.out.println(input.substring(5) + " is " + file.getAbsolutePath());
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
                         System.out.println(input.substring(5) + ": not found");
-                        break;
+                    }
+                } else {
+                    System.out.println(input.substring(5) + ": not found");
                 }
             } else {
                 System.out.println(input + ": command not found");
